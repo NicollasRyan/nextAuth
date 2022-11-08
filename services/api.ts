@@ -6,8 +6,11 @@ interface AxiosErrorResponse {
 }
 
 let cookies = parseCookies();
+<<<<<<< HEAD
 let isRefreshing = false;
 let failedRequestsQueue = [];
+=======
+>>>>>>> 7a4b7e079165095af2463d01eb6f16582b247fa3
 
 export const api = axios.create({
   baseURL: "http://localhost:3333",
@@ -26,6 +29,7 @@ api.interceptors.response.use(
         cookies = parseCookies();
 
         const { "nextauth.refreshToken": refreshToken } = cookies;
+<<<<<<< HEAD
         const originalConfig = error.config;
 
         if (!isRefreshing) {
@@ -77,6 +81,27 @@ api.interceptors.response.use(
               reject(err);
             },
           });
+=======
+
+        api.post("/refresh", { refreshToken }).then((response) => {
+          const { token } = response.data;
+
+          setCookie(undefined, "nextauth.token", token, {
+            maxAge: 60 * 60 * 24 * 30,
+            path: "/",
+          });
+          setCookie(
+            undefined,
+            "nextauth.refreshToken",
+            response.data.refreshToken,
+            {
+              maxAge: 60 * 60 * 24 * 30,
+              path: "/",
+            }
+          );
+
+          api.defaults.headers["Authorization"] = `Bearer ${token}`;
+>>>>>>> 7a4b7e079165095af2463d01eb6f16582b247fa3
         });
       } else {
       }
