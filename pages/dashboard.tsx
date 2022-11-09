@@ -23,6 +23,7 @@ export const getServerSideProps = withSSRAuth(async (ctx) => {
   const response = await apiClint.get("/me");
 
   console.log(response.data);
+
   return {
     props: {},
   };
