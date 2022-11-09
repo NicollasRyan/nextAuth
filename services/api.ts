@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { parseCookies, setCookie } from "nookies";
+import { parseCookies, setCookie } from "nookies"; // erro já resolvido
 
 interface AxiosErrorResponse {
   code?: string;
