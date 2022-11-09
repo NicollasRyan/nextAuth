@@ -1,6 +1,9 @@
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { api } from "../services/api";
+import { setupAPIClint } from "../services/api";
+
+import { api } from "../services/apiClint";
+import { withSSRAuth } from "../utils/withSSRAuth";
 
 export default function Dashboard() {
   const { user } = useContext(AuthContext);
@@ -14,3 +17,13 @@ export default function Dashboard() {
 
   return <h1>Dashboard: {user?.email}</h1>;
 }
+
+export const getServerSideProps = withSSRAuth(async (ctx) => {
+  const apiClint = setupAPIClint(ctx);
+  const response = await apiClint.get("/me");
+
+  console.log(response.data);
+  return {
+    props: {},
+  };
+});
