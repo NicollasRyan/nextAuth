@@ -16,7 +16,8 @@ type SingInCredentials = {
 };
 
 type AuthContextData = {
-  singIn(credentials: SingInCredentials): Promise<void>;
+  singIn: (credentials: SingInCredentials) => Promise<void>;
+  singOut: () => void;
   user: User;
   isAuthenticated: boolean;
 };
@@ -25,18 +26,36 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
+export const AuthContext = createContext({} as AuthContextData);
+
+let authChannel: BroadcastChannel;
+
 export function singOut() {
   destroyCookie(undefined, "nextauth.token"),
     destroyCookie(undefined, "nextauth.refreshToken");
 
+  authChannel.postMessage("signOut");
+
   Router.push("/");
 }
-
-export const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User>();
   const isAuthenticated = !!user;
+
+  useEffect(() => {
+    authChannel = new BroadcastChannel("auth");
+
+    authChannel.onmessage = (message) => {
+      switch (message.data) {
+        case "singOut":
+          singOut();
+          break;
+        default:
+          break;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const { "nextauth.token": token } = parseCookies();
@@ -88,7 +107,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ singIn, isAuthenticated, user }}>
+    <AuthContext.Provider value={{ singIn, singOut, isAuthenticated, user }}>
       {children}
     </AuthContext.Provider>
   );

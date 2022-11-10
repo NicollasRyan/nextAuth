@@ -8,7 +8,7 @@ import { api } from "../services/apiClint";
 import { withSSRAuth } from "../utils/withSSRAuth";
 
 export default function Dashboard() {
-  const { user, isAuthenticated } = useContext(AuthContext);
+  const { user, singOut, isAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
     api
@@ -24,6 +24,8 @@ export default function Dashboard() {
       <Can permissions={["metrics.list"]}>
         <div>Métricas</div>
       </Can>
+
+      <button onClick={singOut}>Sign out</button>
     </>
   );
 }
